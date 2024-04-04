@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import SearchForm from './components/SearchForm';
-import City from './components/City';
+import WeatherSearch from './components/WeatherSearch';
 import Weather from './components/Weather';
 
 const apiKey = process.env.REACT_APP_API_KEY;
