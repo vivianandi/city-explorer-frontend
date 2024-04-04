@@ -3,7 +3,8 @@ import axios from 'axios';
 import WeatherSearch from './components/WeatherSearch';
 import Weather from './components/Weather';
 
-const apiKey = process.env.REACT_APP_API_KEY;
+const weatherApiKey = process.env.REACT_APP_WEATHER_API_KEY;
+const movieApiKey = process.env.REACT_APP_MOVIE_API_KEY;
 
 function App() {
   const [location, setLocation] = useState({});
@@ -11,7 +12,7 @@ function App() {
 
   async function handleSearch(city) {
     try {
-      const locationURL = `${API}/location?city=${city}`;
+      const locationURL = `/location?city=${city}`;
       const response = await axios.get(locationURL);
       const data = response.data;
       setLocation(data);
@@ -23,7 +24,7 @@ function App() {
 
   async function getWeather(location) {
     try {
-      const url = `${API}/weather?latitude=${location.latitude}&longitude=${location.longitude}`;
+      const url = `/weather?latitude=${location.latitude}&longitude=${location.longitude}`;
       const response = await axios.get(url);
       const data = response.data;
       setWeather(data);
@@ -34,7 +35,7 @@ function App() {
 
   return (
     <>
-      <SearchForm handleSearch={handleSearch} />
+      <WeatherSearch handleSearch={handleSearch} />
       <City location={location} />
       <Weather weather={weather} />
     </>
