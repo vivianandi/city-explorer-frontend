@@ -7,6 +7,7 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
 const accessToken = process.env.VITE_LOCATION_ACCESS_TOKEN;
 console.log("Access Token", accessToken);
+const BACKEND_BASE_URL = process.env.VITE_API_URL;
 
 function App() {
   // Initialize state variables
@@ -29,7 +30,7 @@ function App() {
   // Fetch location data from API
   async function getLocation() {
     // Construct API URL
-    let url = `https://us1.locationiq.com/v1/search?key=${accessToken}&q=${city}&format=json&`;
+    let url = `${BACKEND_BASE_URL}/location?key=${accessToken}&q=${city}&format=json`;
     try {
       // Fetch data from API
       let response = await fetch(url);
@@ -58,7 +59,7 @@ function App() {
   // Fetch weather data from API
   async function fetchWeatherData(lat, lon) {
     // Construct API URL for weather endpoint
-    let weatherUrl = `/weather?lat=${lat}&lon=${lon}`;
+    let weatherUrl = `${BACKEND_BASE_URL}/weather?lat=${lat}&lon=${lon}`;
     try {
       // Fetch weather data from server
       let response = await fetch(weatherUrl);
