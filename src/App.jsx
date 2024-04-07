@@ -3,7 +3,9 @@ import { When } from 'react-if';
 import Weather from './components/Weather'; // Import Weather component
 
 // Get access token from .env file
-let accessToken = import.meta.env.VITE_LOCATION_ACCESS_TOKEN; // No one can see accessToken online
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
+const accessToken = process.env.VITE_LOCATION_ACCESS_TOKEN;
 console.log("Access Token", accessToken);
 
 function App() {
