@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { When } from 'react-if';
+import Weather from './components/Weather'; // Import Weather component
 
 // Get access token from .env file
 let accessToken = import.meta.env.VITE_LOCATION_ACCESS_TOKEN; // No one can see accessToken online
@@ -10,7 +11,7 @@ function App() {
   const [city, setCity] = useState('');
   const [location, setLocation] = useState({});
   const [error, setError] = useState(null); // State to manage API call errors
-
+  const [weatherData, setWeatherData] = useState(null); // State to store weather data
 
   // Handle input change
   function handleNewCity(e) {
@@ -38,6 +39,11 @@ function App() {
       // Update location state
       setLocation(locationData);
       setError(null); // Clear any previous errors
+
+      // If location data is fetched successfully, fetch weather data
+      if (locationData.lat && locationData.lon) {
+        fetchWeatherData(locationData.lat, locationData.lon);
+      }
     } catch (error) {
       console.error("Error getting location information", error);
       setError(error.message); // Set error message in state
@@ -47,13 +53,29 @@ function App() {
     console.log("Getting Location Information for", city, url);
   }
 
-  // JSX return statement
-  // form/search component, title component/ lat lon comp, map component
-  // TODO: make separate pages for components
+  // Fetch weather data from API
+  async function fetchWeatherData(lat, lon) {
+    // Construct API URL for weather endpoint
+    let weatherUrl = `/weather?lat=${lat}&lon=${lon}`;
+    try {
+      // Fetch weather data from server
+      let response = await fetch(weatherUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch weather data: ${response.status} - ${response.statusText}`);
+      }
+      let weatherJson = await response.json();
+      setWeatherData(weatherJson);
+    } catch (error) {
+      console.error("Error fetching weather data", error);
+      // You can handle error states here if necessary
+    }
+
+    // Log information
+    console.log("Getting Weather Information for", lat, lon, weatherUrl);
+  }
+
   return (
-
     <div className="container mt-5">
-
       {/* Bootstrap Alert component to display error message */}
       {error && (
         <div className="alert alert-danger" role="alert">
@@ -79,10 +101,9 @@ function App() {
         </div>
       )}
 
-      <When condition={location.lat && location.lon}>
-        <div className="mb-3">
-          <img src={`https://maps.locationiq.com/v3/staticmap?key=${accessToken}&center=${location.lat},${location.lon}&size=500x440`} className="img-fluid" alt="Map" />
-        </div>
+      {/* Display Weather Component with weatherData */}
+      <When condition={weatherData}>
+        <Weather forecastData={weatherData} />
       </When>
     </div>
   );

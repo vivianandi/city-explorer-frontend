@@ -6,7 +6,7 @@ function Weather(props) {
       {props.forecastData && props.forecastData.map((day, index) => (
         <section key={index}>
           <h3>{day.date}</h3>
-          <p>Forecast: {day.forecast}</p>
+          <p>Forecast: {day.description}</p>
           <p>Low: {day.low}</p>
           <p>High: {day.high}</p>
         </section>
@@ -14,5 +14,4 @@ function Weather(props) {
     </>
   );
 }
-
 export default Weather;
