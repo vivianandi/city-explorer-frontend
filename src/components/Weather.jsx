@@ -1,7 +1,9 @@
+import React from 'react';
+
 function Weather(props) {
   return (
     <>
-      {props.forecastData.map((day, index) => (
+      {props.forecastData && props.forecastData.map((day, index) => (
         <section key={index}>
           <h3>{day.date}</h3>
           <p>Forecast: {day.forecast}</p>
@@ -12,3 +14,5 @@ function Weather(props) {
     </>
   );
 }
+
+export default Weather;
