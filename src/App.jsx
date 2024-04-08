@@ -3,9 +3,9 @@ import { When } from 'react-if';
 import Weather from './components/Weather'; // Import Weather component
 
 // Get access token from .env file
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
-const MOVIE_API_KEY = process.env.MOVIE_API_KEY;
-const accessToken = process.env.VITE_LOCATION_ACCESS_TOKEN;
+const WEATHER_API_KEY = import.meta.env.WEATHER_API_KEY;
+const MOVIE_API_KEY = import.meta.env.MOVIE_API_KEY;
+const accessToken = import.meta.env.VITE_LOCATION_ACCESS_TOKEN;
 console.log("Access Token", accessToken);
 const API = import.meta.env.VITE_API_URL;
 
@@ -27,13 +27,12 @@ function App() {
     getLocation();
   }
 
-  // Fetch location data from API
   async function getLocation() {
     // Construct API URL
     let locationURL = `${API}/location?key=${accessToken}&q=${city}&format=json`;
     try {
       // Fetch data from API
-      let response = await fetch(url);
+      let response = await fetch(locationURL);
       if (!response.ok) {
         throw new Error(`Failed to fetch location data: ${response.status} - ${response.statusText}`);
       }
@@ -53,7 +52,7 @@ function App() {
     }
 
     // Log information
-    console.log("Getting Location Information for", city, url);
+    console.log("Getting Location Information for", city, locationURL);
   }
 
   // Fetch weather data from API
