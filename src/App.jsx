@@ -37,12 +37,13 @@ function App() {
         throw new Error(`Failed to fetch location data: ${response.status} - ${response.statusText}`);
       }
       let jsonData = await response.json();
-      let locationData = jsonData[0];
+      // Ensure that locationData is properly initialized
+      let locationData = jsonData[0] || {};
       // Update location state
       setLocation(locationData);
       setError(null); // Clear any previous errors
 
-      // If location data is fetched successfully, fetch weather data
+      // If location data is fetched successfully and contains latitude and longitude
       if (locationData.lat && locationData.lon) {
         fetchWeatherData(locationData.lat, locationData.lon);
       }
@@ -54,6 +55,8 @@ function App() {
     // Log information
     console.log("Getting Location Information for", city, locationURL);
   }
+
+
 
   // Fetch weather data from API
   async function fetchWeatherData(lat, lon) {
@@ -93,6 +96,17 @@ function App() {
       </form>
 
       {location.display_name && (
+        <div className="card mb-3">
+          <div className="card-body">
+            <h5 className="card-title">Location Information</h5>
+            <p className="card-text"><strong>City:</strong> {location.display_name}</p>
+            <p className="card-text"><strong>Latitude:</strong> {location.lat}</p>
+            <p className="card-text"><strong>Longitude:</strong> {location.lon}</p>
+          </div>
+        </div>
+      )}
+
+      {location && location.display_name && (
         <div className="card mb-3">
           <div className="card-body">
             <h5 className="card-title">Location Information</h5>
