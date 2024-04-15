@@ -43,7 +43,7 @@ function App() {
   };
 
   const getLocation = async (city) => {
-    const locationUrl = `https://city-explorer-api-o3h8.onrender.com/location`;
+    const locationUrl = `https://us1.locationiq.com/v1/search.php?key=${accessToken}&q=${city}&format=json`;
     const response = await axios.get(locationUrl);
     if (!response.data || response.data.length === 0) {
       throw new Error('Location not found');
@@ -56,7 +56,7 @@ function App() {
   };
 
   const getWeather = async (lat, lon) => {
-    const weatherUrl = `https://city-explorer-api-o3h8.onrender.com/weather`;
+    const weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?key=${WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
     const response = await axios.get(weatherUrl);
     return response.data.data;
   };
