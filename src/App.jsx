@@ -29,7 +29,7 @@ function App() {
 
   async function getLocation() {
     // Construct API URL
-    let locationURL = `${API}/location?key=${accessToken}&q=${city}&format=json`;
+    let locationURL = `${API}/location?city=${city}`;
     try {
       // Fetch data from API
       let response = await fetch(locationURL);
@@ -94,17 +94,6 @@ function App() {
           <button type="submit" className="btn btn-primary">Explore</button>
         </div>
       </form>
-
-      {location.display_name && (
-        <div className="card mb-3">
-          <div className="card-body">
-            <h5 className="card-title">Location Information</h5>
-            <p className="card-text"><strong>City:</strong> {location.display_name}</p>
-            <p className="card-text"><strong>Latitude:</strong> {location.lat}</p>
-            <p className="card-text"><strong>Longitude:</strong> {location.lon}</p>
-          </div>
-        </div>
-      )}
 
       {location && location.display_name && (
         <div className="card mb-3">
