@@ -43,7 +43,7 @@ function App() {
   };
 
   const getLocation = async (city) => {
-    const locationUrl = `${API_URL}/location?city=${city}`;
+    const locationUrl = `${API_URL}/location`;
     const response = await axios.get(locationUrl);
     if (!response.data || response.data.length === 0) {
       throw new Error('Location not found');
@@ -56,7 +56,7 @@ function App() {
   };
 
   const getWeather = async (lat, lon) => {
-    const weatherUrl = `${API_URL}/weather?lat=${lat}&lon=${lon}`;
+    const weatherUrl = `${API_URL}/weather`;
     const response = await axios.get(weatherUrl);
     return response.data.data;
   };
