@@ -4,7 +4,7 @@ import { When } from 'react-if';
 import Weather from './components/Weather'; // Import Weather component
 
 // Get access token and API keys from .env file
-const API = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 const MOVIE_API_KEY = import.meta.env.VITE_MOVIE_API_KEY;
 const accessToken = import.meta.env.VITE_LOCATION_ACCESS_TOKEN;
@@ -43,7 +43,7 @@ function App() {
   };
 
   const getLocation = async (city) => {
-    const locationUrl = `https://us1.locationiq.com/v1/search.php?key=${accessToken}&q=${city}&format=json`;
+    const locationUrl = `${API_URL}/location?city=${city}`;
     const response = await axios.get(locationUrl);
     if (!response.data || response.data.length === 0) {
       throw new Error('Location not found');
@@ -56,7 +56,7 @@ function App() {
   };
 
   const getWeather = async (lat, lon) => {
-    const weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?key=${WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
+    const weatherUrl = `${API_URL}/weather?lat=${lat}&lon=${lon}`;
     const response = await axios.get(weatherUrl);
     return response.data.data;
   };
