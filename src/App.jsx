@@ -1,112 +1,91 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { When } from 'react-if';
 import Weather from './components/Weather'; // Import Weather component
 
-// Get access token from .env file
-const WEATHER_API_KEY = import.meta.env.WEATHER_API_KEY;
-const MOVIE_API_KEY = import.meta.env.MOVIE_API_KEY;
-const accessToken = import.meta.env.VITE_LOCATION_ACCESS_TOKEN;
-console.log("Access Token", accessToken);
+// Get access token and API keys from .env file
 const API = import.meta.env.VITE_API_URL;
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+const MOVIE_API_KEY = import.meta.env.VITE_MOVIE_API_KEY;
+const accessToken = import.meta.env.VITE_LOCATION_ACCESS_TOKEN;
 
 function App() {
-  // Initialize state variables
   const [city, setCity] = useState('');
   const [location, setLocation] = useState({});
-  const [error, setError] = useState(null); // State to manage API call errors
-  const [weatherData, setWeatherData] = useState(null); // State to store weather data
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [weatherData, setWeatherData] = useState(null);
 
-  // Handle input change
-  function handleNewCity(e) {
+  const handleNewCity = (e) => {
     setCity(e.target.value);
-  }
+  };
 
-  // Handle form submission
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    getLocation();
-  }
-
-  async function getLocation() {
-    // Construct API URL
-    let locationURL = `${API}/location?city=${city}`;
+    if (!city) {
+      setError('Please enter a city name.');
+      return;
+    }
+    setError(null);
+    setLoading(true);
     try {
-      // Fetch data from API
-      let response = await fetch(locationURL);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch location data: ${response.status} - ${response.statusText}`);
-      }
-      let jsonData = await response.json();
-      // Ensure that locationData is properly initialized
-      let locationData = jsonData[0] || {};
-      // Update location state
+      const locationData = await getLocation(city);
       setLocation(locationData);
-      setError(null); // Clear any previous errors
-
-      // If location data is fetched successfully and contains latitude and longitude
-      if (locationData.lat && locationData.lon) {
-        fetchWeatherData(locationData.lat, locationData.lon);
+      if (locationData.latitude && locationData.longitude) {
+        const weather = await getWeather(locationData.latitude, locationData.longitude);
+        setWeatherData(weather);
       }
-    } catch (error) {
-      console.error("Error getting location information", error);
-      setError(error.message); // Set error message in state
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Log information
-    console.log("Getting Location Information for", city, locationURL);
-  }
-
-
-
-  // Fetch weather data from API
-  async function fetchWeatherData(lat, lon) {
-    // Construct API URL for weather endpoint
-    let weatherUrl = `${API}/weather?lat=${lat}&lon=${lon}`;
-    try {
-      // Fetch weather data from server
-      let response = await fetch(weatherUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch weather data: ${response.status} - ${response.statusText}`);
-      }
-      let weatherJson = await response.json();
-      setWeatherData(weatherJson);
-    } catch (error) {
-      console.error("Error fetching weather data", error);
-      // You can handle error states here if necessary
+  const getLocation = async (city) => {
+    const locationUrl = `https://us1.locationiq.com/v1/search.php?key=${accessToken}&q=${city}&format=json`;
+    const response = await axios.get(locationUrl);
+    if (!response.data || response.data.length === 0) {
+      throw new Error('Location not found');
     }
+    return {
+      name: response.data[0].display_name,
+      latitude: response.data[0].lat,
+      longitude: response.data[0].lon
+    };
+  };
 
-    // Log information
-    console.log("Getting Weather Information for", lat, lon, weatherUrl);
-  }
+  const getWeather = async (lat, lon) => {
+    const weatherUrl = `https://api.weatherbit.io/v2.0/forecast/daily?key=${WEATHER_API_KEY}&lat=${lat}&lon=${lon}&days=5&units=I`;
+    const response = await axios.get(weatherUrl);
+    return response.data.data;
+  };
 
   return (
     <div className="container mt-5">
-      {/* Bootstrap Alert component to display error message */}
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
-
+      {loading && <div>Loading...</div>}
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
       <form onSubmit={handleSubmit} className="mb-3">
         <div className="input-group">
           <input type="text" className="form-control" placeholder="Enter a city" onChange={handleNewCity} />
           <button type="submit" className="btn btn-primary">Explore</button>
         </div>
       </form>
-
-      {location && location.display_name && (
+      {location.name && (
         <div className="card mb-3">
           <div className="card-body">
             <h5 className="card-title">Location Information</h5>
-            <p className="card-text"><strong>City:</strong> {location.display_name}</p>
-            <p className="card-text"><strong>Latitude:</strong> {location.lat}</p>
-            <p className="card-text"><strong>Longitude:</strong> {location.lon}</p>
+            <p className="card-text"><strong>City:</strong> {location.name}</p>
+            <p className="card-text"><strong>Latitude:</strong> {location.latitude}</p>
+            <p className="card-text"><strong>Longitude:</strong> {location.longitude}</p>
           </div>
         </div>
       )}
-
-      {/* Display Weather Component with weatherData */}
+      <When condition={location.latitude && location.longitude}>
+        <div className="mb-3">
+          <img src={`https://maps.locationiq.com/v3/staticmap?key=${accessToken}&center=${location.latitude},${location.longitude}&size=500x440`} className="img-fluid" alt="Map" />
+        </div>
+      </When>
       <When condition={weatherData}>
         <Weather forecastData={weatherData} />
       </When>

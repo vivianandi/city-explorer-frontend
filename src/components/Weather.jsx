@@ -1,17 +1,18 @@
 import React from 'react';
 
-function Weather(props) {
+function Weather({ forecastData }) {
   return (
     <>
-      {props.forecastData && props.forecastData.map((day, index) => (
+      {forecastData && forecastData.map((day, index) => (
         <section key={index}>
-          <h3>{day.date}</h3>
-          <p>Forecast: {day.description}</p>
-          <p>Low: {day.low}</p>
-          <p>High: {day.high}</p>
+          <h3>{day.valid_date}</h3> {/* Changed from day.date */}
+          <p>Forecast: {day.weather.description}</p> {/* Assuming nested structure */}
+          <p>Low: {day.low_temp}</p> {/* Changed from day.low */}
+          <p>High: {day.high_temp}</p> {/* Changed from day.high */}
         </section>
       ))}
     </>
   );
 }
+
 export default Weather;
